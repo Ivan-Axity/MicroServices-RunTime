@@ -1,64 +1,37 @@
+#---------IntegrationServerFlows-----------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flow-services-deployment
-  namespace: services-ns
-  labels:
-    app: flow-micro-services
+  name: integration-service
+  namespace: integrations-ns
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flow-micro-services
+      app: integration-service
   template:
     metadata:
       labels:
-        app: flow-micro-services
+        app: integration-service
     spec:
       containers:
-      - name: flow-micro-services
-        image: oxzcrkpiprd01.azurecr.io/data-agent-service:v9
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: DOTNET_ENVIRONMENT
-          value: Prod
-        - name: AZURE_DEVOPS_ORGANIZATION
-          value: OXXOSWD
-        - name: REQUEST_INTERVAL
-          value: "4"
-        - name: OFFSET
-          value: "10000"
-        - name: BATCH
-          value: "200"
-        - name: BACK_DAYS
-          value: "7"
-        - name: DATABASE_PROVIDER_NAME
-          value: "CosmosDB"
-        - name: AZURE_DEVOPS_ORGANIZATION_PAT
-          valueFrom:
-            secretKeyRef:
-              name: azure-devops-credentials
-              key: ORGANIZATION_PAT
-        - name: COSMOSDB_KEY
-          valueFrom:
-            secretKeyRef:
-              name: azure-cosmos-credentials
-              key: COSMOSKEY
-        - name: COSMOSDB_URL
-          valueFrom:
-            secretKeyRef:
-              name: azure-cosmos-credentials
-              key: COSMOSURL
-        - name: COSMOSDB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: azure-cosmos-credentials
-              key: COSMOSBDNAME
-        - name: INDEX_NAME
-          valueFrom:
-            secretKeyRef:
-              name: azure-cosmos-credentials
-              key: INDEXNAME
-      terminationGracePeriodSeconds: 90
-  
+      - name: integration-container
+        image: flowreg.azurecr.io/containered-integration-flow:{image_ver}
+        ports:
+        - containerPort: 5555
+
 ---
+#-----------LoadBalancer---------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: integration-service-lb
+  namespace: integrations-ns
+spec:
+  type: LoadBalancer
+  selector:
+    app: integration-service
+  ports:
+    - protocol: TCP
+      port: 5555
+      targetPort: 5555
