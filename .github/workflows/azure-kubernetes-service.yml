@@ -102,6 +102,7 @@ jobs:
       - name: Deploys application
         uses: Azure/k8s-deploy@v4
         with:
+          namespace: 'integrations-ns'
           action: deploy
           manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
           images: |
