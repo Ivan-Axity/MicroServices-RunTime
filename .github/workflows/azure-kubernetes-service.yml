@@ -35,7 +35,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CONTAINER_REGISTRY: "FlowReg"
+  AZURE_CONTAINER_REGISTRY: "flowreg"
   CONTAINER_NAME: "integration-container"
   RESOURCE_GROUP: "AKS_Integration"
   CLUSTER_NAME: "IntegrationClusterAks"
