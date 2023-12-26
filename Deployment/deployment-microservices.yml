@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: integration-container
-        image: flowreg.azurecr.io/containered-integration-flow:{image_ver}
+        image: <image-name>:<tag>
         ports:
         - containerPort: 5555
 
