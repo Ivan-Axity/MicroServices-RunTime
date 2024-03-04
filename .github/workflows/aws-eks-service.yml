@@ -45,4 +45,4 @@ jobs:
 
     - name: Desplegar en EKS
       run: |
-        kubectl set image deployment/mi-deployment mi-container=123456789012.dkr.ecr.us-west-2.amazonaws.com/mi-imagen:$GITHUB_SHA  # Actualiza el contenedor en el deployment de Kubernetes
+        kubectl get ns
