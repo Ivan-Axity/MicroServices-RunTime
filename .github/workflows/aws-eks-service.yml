@@ -6,7 +6,7 @@ on:
       - main  # El despliegue se activa con los cambios en la rama 'main'
 
 env:
-  AZURE_CONTAINER_REGISTRY: "flowreg"
+  AZURE_CONTAINER_REGISTRY: "integration-ecr-repo"
   CONTAINER_NAME: "integration-container"
   RESOURCE_GROUP: "AKS_Integration"
   CLUSTER_NAME: "integration_eks_server_001"
