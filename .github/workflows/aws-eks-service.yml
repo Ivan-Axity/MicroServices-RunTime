@@ -1,4 +1,4 @@
-name: Desplegar en AWS EKS
+name: Desplegar en AWS-EKS
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   DEPLOYMENT_MANIFEST_PATH: "./Deployment/deployment-microservices.yml"
 
 jobs:
-  build-and-deploy:
+  build-and-push-image:
     runs-on: ubuntu-latest  # Se ejecuta en un entorno Ubuntu
 
     steps:
@@ -43,6 +43,37 @@ jobs:
         aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 891377344966.dkr.ecr.us-east-2.amazonaws.com
         docker push 891377344966.dkr.ecr.us-east-2.amazonaws.com/${{ env.CONTAINER_NAME }}:${{ github.sha }}   # Publica la imagen en ECR
 
-    - name: Desplegar en EKS
-      run: |
-        kubectl get ns
+  deploy-integration-service:
+     permissions:
+      actions: read
+      contents: read
+      id-token: write
+       
+     runs-on: ubuntu-latest  # Se ejecuta en un entorno Ubuntu
+     steps:
+       - name: Checkout Repositorio
+         uses: actions/checkout@v2  # Extrae el código del repositorio
+       - name: Desplegar en EKS
+         run: |
+          kubectl get namespace <nombre-del-namespace> || kubectl create namespace <nombre-del-namespace>
+
+       - name: Configurar AWS credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Usa credenciales almacenadas en Secrets de GitHub
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2  # Región de AWS
+
+       - name: Instalar kubectl
+         run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl  # Instala kubectl
+
+       - name: Configurar Kubeconfig
+         run: |
+           aws eks update-kubeconfig --region us-east-2 --name ${{ env.CLUSTER_NAME }}   # Configura kubeconfig para EKS
+
+       - name: Generación de name-space de Integración
+         run: |
+           kubectl get namespace integrations-ns || kubectl create integrations-ns
