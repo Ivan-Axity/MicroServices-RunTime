@@ -6,8 +6,7 @@ on:
       - main  # El despliegue se activa con los cambios en la rama 'main'
 
 env:
-  AZURE_CONTAINER_REGISTRY: "integration-ecr-repo"
-  CONTAINER_NAME: "integration-container"
+  CONTAINER_NAME: "integration-ecr-repo"
   RESOURCE_GROUP: "AKS_Integration"
   CLUSTER_NAME: "integration_eks_server_001"
   DEPLOYMENT_MANIFEST_PATH: "./Deployment/deployment-microservices.yml"
@@ -40,9 +39,9 @@ jobs:
     - name: Construir y Publicar la Imagen del Contenedor
       run: |
         docker build -t ${{ env.CONTAINER_NAME }}:${{ github.sha }} .  # Construye la imagen de Docker
-        docker tag ${{ env.CONTAINER_NAME }}:${{ github.sha }} 891377344966.dkr.ecr.us-east-2.amazonaws.com/integration-ecr-repo/${{ env.CONTAINER_NAME }}:${{ github.sha }}  # Etiqueta la imagen
+        docker tag ${{ env.CONTAINER_NAME }}:${{ github.sha }} 891377344966.dkr.ecr.us-east-2.amazonaws.com/${{ env.CONTAINER_NAME }}:${{ github.sha }}  # Etiqueta la imagen
         aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 891377344966.dkr.ecr.us-east-2.amazonaws.com
-        docker push 891377344966.dkr.ecr.us-east-2.amazonaws.com/integration-ecr-repo/${{ env.CONTAINER_NAME }}:${{ github.sha }}   # Publica la imagen en ECR
+        docker push 891377344966.dkr.ecr.us-east-2.amazonaws.com/${{ env.CONTAINER_NAME }}:${{ github.sha }}   # Publica la imagen en ECR
 
     - name: Desplegar en EKS
       run: |
