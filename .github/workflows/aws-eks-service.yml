@@ -35,7 +35,7 @@ jobs:
 
     - name: Configurar Kubeconfig
       run: |
-        aws eks update-kubeconfig --region us-east-2 --name env.CLUSTER_NAME  # Configura kubeconfig para EKS
+        aws eks update-kubeconfig --region us-east-2 --name ${{ env.CLUSTER_NAME }}   # Configura kubeconfig para EKS
 
     - name: Construir y Publicar la Imagen del Contenedor
       run: |
