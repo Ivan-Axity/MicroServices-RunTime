@@ -78,7 +78,7 @@ jobs:
 
        - name: Configurar versión en deployment
          run: |
-           sed -i 's/integration-image/891377344966.dkr.ecr.us-east-2.amazonaws.com/${{ env.CONTAINER_NAME }}:${{ github.sha }}/g' ./Deployment/deployment-microservices.yml 
+           sed -i 's|integration-image|891377344966.dkr.ecr.us-east-2.amazonaws.com/${{ env.CONTAINER_NAME }}:${{ github.sha }}|g' ./Deployment/deployment-microservices.yml 
 
        - name: Verificar Versión
          run: |
