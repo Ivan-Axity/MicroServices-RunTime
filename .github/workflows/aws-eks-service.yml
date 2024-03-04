@@ -86,4 +86,4 @@ jobs:
            
        - name: Ejecutar Despliegue
          run: |
-           kubectl apply -f ./Deployment/deployment-microservices.yml -ns integrations-ns
+           kubectl apply -f ./Deployment/deployment-microservices.yml -n integrations-ns
