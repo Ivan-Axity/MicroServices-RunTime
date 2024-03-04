@@ -9,7 +9,7 @@ env:
   AZURE_CONTAINER_REGISTRY: "flowreg"
   CONTAINER_NAME: "integration-container"
   RESOURCE_GROUP: "AKS_Integration"
-  CLUSTER_NAME: "integration-eks-server_001"
+  CLUSTER_NAME: "integration_eks_server_001"
   DEPLOYMENT_MANIFEST_PATH: "./Deployment/deployment-microservices.yml"
 
 jobs:
