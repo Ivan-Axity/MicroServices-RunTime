@@ -54,9 +54,6 @@ jobs:
      steps:
        - name: Checkout Repositorio
          uses: actions/checkout@v2  # Extrae el código del repositorio
-       - name: Desplegar en EKS
-         run: |
-          kubectl get namespace <nombre-del-namespace> || kubectl create namespace <nombre-del-namespace>
 
        - name: Configurar AWS credentials
          uses: aws-actions/configure-aws-credentials@v1
