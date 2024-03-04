@@ -1,0 +1,49 @@
+name: Desplegar en AWS EKS
+
+on:
+  push:
+    branches:
+      - main  # El despliegue se activa con los cambios en la rama 'main'
+
+env:
+  AZURE_CONTAINER_REGISTRY: "flowreg"
+  CONTAINER_NAME: "integration-container"
+  RESOURCE_GROUP: "AKS_Integration"
+  CLUSTER_NAME: "integration-eks-server_001"
+  DEPLOYMENT_MANIFEST_PATH: "./Deployment/deployment-microservices.yml"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Se ejecuta en un entorno Ubuntu
+
+    steps:
+    - name: Checkout Repositorio
+      uses: actions/checkout@v2  # Extrae el código del repositorio
+
+    - name: Configurar AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Usa credenciales almacenadas en Secrets de GitHub
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2  # Región de AWS
+
+    - name: Instalar kubectl
+      run: |
+        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl  # Instala kubectl
+
+    - name: Configurar Kubeconfig
+      run: |
+        aws eks update-kubeconfig --region us-east-2 --name env.CLUSTER_NAME  # Configura kubeconfig para EKS
+
+    - name: Construir y Publicar la Imagen del Contenedor
+      run: |
+        docker build -t ${{ env.CONTAINER_NAME }}:${{ github.sha }} .  # Construye la imagen de Docker
+        docker tag ${{ env.CONTAINER_NAME }}:${{ github.sha }} 891377344966.dkr.ecr.us-east-2.amazonaws.com/integration-ecr-repo/${{ env.CONTAINER_NAME }}:${{ github.sha }}  # Etiqueta la imagen
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 891377344966.dkr.ecr.us-east-2.amazonaws.com
+        docker push 891377344966.dkr.ecr.us-east-2.amazonaws.com/integration-ecr-repo/${{ env.CONTAINER_NAME }}:${{ github.sha }}   # Publica la imagen en ECR
+
+    - name: Desplegar en EKS
+      run: |
+        kubectl set image deployment/mi-deployment mi-container=123456789012.dkr.ecr.us-west-2.amazonaws.com/mi-imagen:$GITHUB_SHA  # Actualiza el contenedor en el deployment de Kubernetes
