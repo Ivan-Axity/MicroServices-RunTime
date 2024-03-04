@@ -50,6 +50,7 @@ jobs:
       id-token: write
        
      runs-on: ubuntu-latest  # Se ejecuta en un entorno Ubuntu
+     needs: [build-and-push-image]
      steps:
        - name: Checkout Repositorio
          uses: actions/checkout@v2  # Extrae el código del repositorio
