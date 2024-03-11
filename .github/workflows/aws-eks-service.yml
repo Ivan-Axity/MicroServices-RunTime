@@ -1,9 +1,7 @@
 name: Desplegar en AWS-EKS
 
-on:
-  push:
-    branches:
-      - main  # El despliegue se activa con los cambios en la rama 'main'
+on: 
+  workflow_dispatch:
 
 env:
   CONTAINER_NAME: "integration-ecr-repo"
